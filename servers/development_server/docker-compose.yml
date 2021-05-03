@@ -1,0 +1,44 @@
+version: "3.8"
+
+volumes:
+  ab_postgres_vol: {}
+  ab_redis_vol: {}
+
+services:
+  alpha_django:
+    depends_on:
+      - bravo_postgres
+      - charlie_redis
+    build:
+      context: ../../ # repo directory
+      dockerfile: servers/development_server/dockerfile
+    ports:
+      - 8000:8000
+    env_file: .env.development.django
+    # command:
+    #   - /bin/sh
+    #   - -c
+    #   - |
+    #     /project/utils/wait-for-it.sh db:5432
+
+  bravo_postgres:
+    image: postgres:12.6
+    ports:
+      - 8001:5432
+    volumes:
+      - ab_postgres_vol:/var/lib/postgresql/data
+    env_file: .env.development.postgres
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -u postgres
+      interval: 10s
+      timeout: 30s
+      retries: 10
+
+  charlie_redis:
+    image: redis:6.2.2
+    ports:
+      - 8002:6397
+    volumes:
+      - ab_redis_vol:/data

@@ -1,0 +1,22 @@
+FROM python:3.8
+
+# default
+ENV PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends vim wget apt-utils
+
+# wait-for-it.sh
+COPY servers/development_server/wait-for-it.sh /project/utils/
+
+# poetry
+COPY servers/development_server/get-poetry.py /project/utils/
+COPY homebooks/pyproject.toml /project/utils/
+WORKDIR /project/utils/
+RUN python get-poetry.py --yes
+ENV PATH="/root/.poetry/bin:${PATH}"
+RUN poetry config virtualenvs.create false
+RUN poetry install
+
+# add and run
+ADD ./homebooks /project/development_stage
+WORKDIR /project/development_stage/
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
