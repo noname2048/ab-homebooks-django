@@ -13,7 +13,7 @@ graphql 도입을 위해, 혹은 fastapi 서버를 사용하고 싶었는데, re
 ### 2. IDE
 `pycharm`을 사용.
 
-vscode 가 제일 손에 익지만, 자동완성기능이 거의 없어서 pycharm을 써보려고 한다.
+vscode 가 제일 손에 익지만, django에 대한 자동완성기능이 조금 미흡해 보이는 점이 있어 pycharm을 써보려고 한다.
 
 ### 3. 가상환경
 
@@ -29,11 +29,11 @@ poetry 는 추가적으로 npm이나 yarn 처럼 의존성을 관리하는 추�
 
 4가지 stage 로 나누어 구분합니다.
 
-1. develope statge
+1. `development` statge
    모든 통신과 설정은 개발자 컴퓨터 내부에서 일어납니다. docker-compose를 통해 구성합니다.
-2. intermediate stage
+2. `intermediate` stage
    벡엔드 서버를 제외한 database와 cache와 같은 자원을 외부환경에서 사용합니다.
-3. product stage
+3. `product` stage
    실제 클라우드에서 immutable 객체로 띄워지는 서버에 대한 설정값을 가집니다.
 
 각 단계에 대한 설정값은 homebooks/homebooks/settings 에 저장합니다.
