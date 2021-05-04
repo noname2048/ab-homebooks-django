@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  alpha_nginx:
+    build:
+      context: ../../
+      dockerfile: servers/intermediate_server/nginx.dockerfile
+    ports:
+      - 9000:80
+
+  bravo_gunicorn:
+    depends_on:
+      - alpha_nginx
+    build:
+      context: ../../ # repo directory
+      dockerfile: servers/intermediate_server/gunicorn.dockerfile
+    env_file: .env
+    ports:
+      - 8000:8000
+    command:
+      - /bin/sh
+      - -c
+      - |
+        dockerize -wait tcp://alpha_nginx:80 -timeout 10s
+        gunicorn homebooks.wsgi:application --bind 0.0.0.0:8000
