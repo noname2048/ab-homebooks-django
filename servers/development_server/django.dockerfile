@@ -5,9 +5,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends vim wget apt-ut
 
 # poetry install
 COPY homebooks/pyproject.toml /project/utils/
-RUN poetry install
+COPY homebooks/poetry.lock /project/utils/
+RUN poetry --dev install
 
 # add and run
-ADD ./homebooks /project/development_stage
-WORKDIR /project/development_stage/
+ADD ./homebooks /project/development
+WORKDIR /project/development/
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
