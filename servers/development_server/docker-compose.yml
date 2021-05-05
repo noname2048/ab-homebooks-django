@@ -9,18 +9,21 @@ services:
     depends_on:
       - bravo_postgres
       - charlie_redis
-    build:
-      context: ../../ # repo directory
+    build:  # calc by compose file position
+      context: ../../  # is repo directory
       dockerfile: servers/development_server/django.dockerfile
     env_file: .env.development.django
     ports:
       - 8000:8000
+    volumes:  # calc by compose file position
+      - ../../homebooks:/project/development
     command:
-      - /bin/sh
+      - /bin/bash
       - -c
       - |
         dockerize -wait tcp://bravo_postgres:5432 -timeout 10s
-        dockerize -wait tcp://charlie_redis:6379 -timeout 15s
+        dockerize -wait tcp://charlie_redis:6379 -timeout 10s
+        echo `pwd`
         python manage.py runserver 0:8000
 
   bravo_postgres:

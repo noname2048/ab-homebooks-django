@@ -9,6 +9,5 @@ COPY homebooks/poetry.lock /project/utils/
 RUN poetry install
 
 # add and run
-ADD ./homebooks /project/development
-WORKDIR /project/development/
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+WORKDIR /project/development
+CMD ["/bin/bash"]
