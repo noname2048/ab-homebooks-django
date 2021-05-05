@@ -1,0 +1,6 @@
+# envfiles
+*/.env
+
+# static, media files
+/static
+/media
