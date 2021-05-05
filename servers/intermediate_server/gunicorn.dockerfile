@@ -8,6 +8,6 @@ COPY homebooks/poetry.lock /project/utils/
 RUN poetry install
 
 # add and run
-COPY homebooks /project/intermediate
+ADD homebooks /project/intermediate
 WORKDIR /project/intermediate/
 CMD ["gunicorn", "homebooks.wsgi:application", "--bind", "0.0.0.0:8000"]

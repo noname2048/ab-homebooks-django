@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends vim wget apt-ut
 # poetry install
 COPY homebooks/pyproject.toml /project/utils/
 COPY homebooks/poetry.lock /project/utils/
-RUN poetry --dev install
+RUN poetry install
 
 # add and run
 ADD ./homebooks /project/development
