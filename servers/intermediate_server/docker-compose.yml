@@ -12,14 +12,17 @@ services:
     depends_on:
       - alpha_nginx
     build:
-      context: ../../ # repo directory
+      context: ../../  # is repo directory
       dockerfile: servers/intermediate_server/gunicorn.dockerfile
     env_file: .env
     ports:
       - 8000:8000
+    volumes:
+      - ../../homebooks:/project/intermediate
     command:
       - /bin/sh
       - -c
       - |
         dockerize -wait tcp://alpha_nginx:80 -timeout 10s
+        echo `pwd`
         gunicorn homebooks.wsgi:application --bind 0.0.0.0:8000
