@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 # module
 from homebooks.settings.base import *
 
-DEV_ENV = BASE_DIR.parent / "servers" / "development_server" / ".env.development"
+DEV_ENV = REPO_DIR / "servers" / "development" / ".env.development"
 load_dotenv(DEV_ENV)
 
 # Quick-start development settings - unsuitable for production
@@ -67,10 +67,10 @@ MIDDLEWARE = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "USER": os.environ["SERVER_DEFAULT_DB_USERNAME"],
+        "PASSWORD": os.environ["SERVER_DEFAULT_DB_PASSWORD"],
         "HOST": os.environ["SERVER_DEFAULT_DB_HOST"],
-        "PORT": os.environ["SERVER_DEFAULT_DB_PORT"],
-        "NAME": os.environ["POSTGRES_DB"],
+        "PORT": os.environ["SERVER_DEFAULT_DB_EXPOSE_PORT"],
+        "NAME": os.environ["SERVER_DEFAULT_DB_DBNAME"],
     }
 }

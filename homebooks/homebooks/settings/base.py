@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
-REPO_DIR = Path(__file__).resolve().parents[-3]  # ab-homebooks-django
+REPO_DIR = Path(__file__).resolve().parents[3]  # ab-homebooks-django
 BASE_DIR = REPO_DIR / "homebooks"  # ab-homebooks-django/homebooks
 
 assert Path.exists(REPO_DIR / "README.md")
