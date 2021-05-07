@@ -5,38 +5,21 @@ volumes:
   ab_redis_vol: {}
 
 services:
-  alpha_django:
-    depends_on:
-      - bravo_postgres
-      - charlie_redis
-    build:  # calc by compose file position
-      context: ../../  # is repo directory
-      dockerfile: servers/development_server/django.dockerfile
-    env_file: .env.development.django
-    ports:
-      - 8000:8000
-    volumes:  # calc by compose file position
-      - ../../homebooks:/project/development
-    command:
-      - /bin/bash
-      - -c
-      - |
-        dockerize -wait tcp://bravo_postgres:5432 -timeout 10s
-        dockerize -wait tcp://charlie_redis:6379 -timeout 10s
-        echo `pwd`
-        python manage.py runserver 0:8000
-
   bravo_postgres:
     image: postgres:12.6
-    env_file: .env.development.postgres
+    environment:
+      - POSTGRES_USER=${SERVER_DEFAULT_DB_USERNAME}
+      - POSTGRES_PASSWORD=${SERVER_DEFAULT_DB_PASSWORD}
+      - POSTGRES_DB=${SERVER_DEFAULT_DB_DBNAME}
+      # encoding options (UTF-8) will be default
     ports:
-      - 8001:5432
+      - ${SERVER_DEFAULT_DB_EXPOSE_PORT}:${SERVER_DEFAULT_DB_PORT}
     volumes:
       - ab_postgres_vol:/var/lib/postgresql/data
 
   charlie_redis:
     image: redis:6.2.2
     ports:
-      - 8002:6397
+      - ${SERVER_REDIS_PORT}:${SERVER_REDIS_EXPOSE_PORT}
     volumes:
       - ab_redis_vol:/data
