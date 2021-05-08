@@ -16,9 +16,11 @@ django-cors-headers = "^3.7.0"
 djangorestframework-jwt = "^1.11.0"
 gunicorn = "^20.1.0"
 python-dotenv = "^0.17.1"
+PyYAML = "^5.4.1"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.1"
+Faker = "^8.1.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
