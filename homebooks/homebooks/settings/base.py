@@ -17,6 +17,8 @@ BASE_DIR = REPO_DIR / "homebooks"  # ab-homebooks-django/homebooks
 
 assert Path.exists(REPO_DIR / "README.md")
 
+AUTH_USER_MODEL = "accounts.User"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_URL = "/static/"
