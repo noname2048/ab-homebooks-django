@@ -20,7 +20,10 @@ from dotenv import load_dotenv
 from homebooks.settings.base import *
 
 DEV_ENV = REPO_DIR / "servers" / "development" / ".env.development"
-load_dotenv(DEV_ENV)
+if Path(DEV_ENV).exists():
+    load_dotenv(DEV_ENV)
+else:
+    print("ENVFILE NOT LOADED BY LOADENV")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -32,7 +35,8 @@ SECRET_KEY = os.environ["SERVER_SECRET_KEY"]
 DEBUG = True
 
 ALLOWED_HOSTS = []
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+INTERNAL_IPS = ["127.0.0.1"]  # debug_toolbar
 
 # Application definition
 
@@ -46,6 +50,7 @@ INSTALLED_APPS = [
     # apps, 3rd party
     "debug_toolbar",
     "rest_framework",
+    "rest_framework_jwt",
     "corsheaders",
     "django_pydenticon",
     "django_extensions",
