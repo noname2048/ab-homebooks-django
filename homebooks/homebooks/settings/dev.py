@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_pydenticon",
     "django_extensions",
+    "drf_yasg",
     # apps, local
     "accounts",
     "bookshelves",
