@@ -11,3 +11,11 @@ class AccountSignupForm(auth_forms.UserCreationForm):
     class Meta(auth_forms.UserChangeForm.Meta):
         model = get_user_model()
         fields = ("email", )
+
+class NoPasswordSignupForm(forms.Form):
+
+    class Meta:
+        model = get_user_model()
+        fields = ["email", "name"]
+
+        
