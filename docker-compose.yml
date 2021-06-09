@@ -1,0 +1,52 @@
+version: "3.8"
+
+volumes:
+  ab_postgres:
+  ab_redis:
+
+services:
+  postgres:
+    image: postgres:12.7
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_INITDB_ARGS="--local=ko_KR.UTF-8"
+    ports:
+      - 5432:5432
+    volumes:
+      - ab_postgres:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - 5462:5462
+
+  redis:
+    depends_on:
+      - rabbitmq
+    image: redis:6.2.2
+    ports:
+      - 6397:6397
+    volumes:
+      - ab_redis:/data
+
+  django:
+    depends_on:
+      - postgres
+      - redis
+    build:
+      context: . # repo dir
+      dockerfile: ./compose/dev.Dockerfile
+    env_file: ./servers/development/.env.development
+    volumes:
+      - ./homebooks:/app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        dockerize -wait tcp://postgres:5432 -timeout 15s
+        dockerize -wait tcp://redis:6397 -timeout 15s
+        python manage.py runserver 0:8000
