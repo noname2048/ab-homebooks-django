@@ -10,9 +10,9 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=example
-      - POSTGRES_INITDB_ARGS="--local=ko_KR.UTF-8"
+      # - POSTGRES_INITDB_ARGS="--locale=ko_KR.UTF-8"
     ports:
-      - 5432:5432
+      - 9001:5432
     volumes:
       - ab_postgres:/var/lib/postgresql/data
 
@@ -22,14 +22,14 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=password
     ports:
-      - 5462:5462
+      - 9002:5462
 
   redis:
     depends_on:
       - rabbitmq
     image: redis:6.2.2
     ports:
-      - 6397:6397
+      - 9003:6379
     volumes:
       - ab_redis:/data
 
@@ -48,5 +48,5 @@ services:
       - -c
       - |
         dockerize -wait tcp://postgres:5432 -timeout 15s
-        dockerize -wait tcp://redis:6397 -timeout 15s
+        dockerize -wait tcp://redis:6379 -timeout 15s
         python manage.py runserver 0:8000
