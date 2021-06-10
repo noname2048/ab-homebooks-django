@@ -6,22 +6,26 @@ from django.contrib.auth import get_user_model, login as auth_login, logout as a
 from django.views.decorators.http import require_http_methods
 
 from .forms import AccountEmailForm, AccountSignupForm
+from rest_framework.views import APIView
+
+import json
+from rest_framework.response import Response
+from django.http.response import JsonResponse
+import traceback
 
 User = get_user_model()
 
 
 @require_http_methods(["OPTION", "GET", "POST"])
 def discover_existence_from_email(request: HttpRequest):
-    """POST 형식의 email params 에서 유저 정보가 있는지 확인한다.
-    """
+    """POST 형식의 email params 에서 유저 정보가 있는지 확인한다."""
     if request.method == "OPTION":
         response = HttpResponse()
-        response["allow"] = ','.join(["OPTION", "GET", "POST"])
+        response["allow"] = ",".join(["OPTION", "GET", "POST"])
         return HttpResponse()
 
     if request.method == "GET":
         return render(request, "accounts/empty.html", {"form": AccountEmailForm()})
-
 
     if "email" not in request.POST:
         return HttpResponseBadRequest("Email is not included")
@@ -47,3 +51,15 @@ def signup_view(request: HttpRequest):
         if form.is_valid():
             signup_user = form.save(commit=False)
             auth_login(signup_user)
+
+
+class SignupAPIView(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        try:
+            if not data["email"]:
+                return JsonResponse({"message": "Email required"}, status=400)
+        except ValidationError as e:
+            tb = traceback.format_exc()
+        except KeyError:
+            return JsonResponse({"message": "Key_error"}, status=400)
