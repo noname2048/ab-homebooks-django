@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import resolve_url
+from django.contrib.auth import get_user_model
 
 
 class User(AbstractUser):
@@ -40,8 +41,28 @@ class User(AbstractUser):
         else:
             return resolve_url("pydenticon_image", self.username)
 
+
 class NoPasswordUser(AbstractBaseUser):
-    name = models.CharField("name", max_length=40)
+    """Login by email(send from server) User.
+
+    Email (required)
+    name (not required. just name)
+    """
+
     email = models.EmailField("email", max_length=120)
-    avatar = models.ImageField("avatar",
-    blank=True, upload_to="accounts/profile/%y/%m/%d/%S")
+    name = models.CharField("name", max_length=40)
+    address = models.CharField("address", max_length=120)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(get_user_model(), models.deletion.CASCADE, primary_key=True)
+    avatar = models.ImageField(
+        "avatar", blank=True, upload_to="accounts/nopassworduser/avatar/%y/%m/%d/%S"
+    )
+
+    @property
+    def avartar_url(self):
+        if self.avatar:
+            self.avatar.url
+        else:
+            return resolve_url("pydenticon", self.user.email)
