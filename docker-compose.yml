@@ -10,7 +10,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=example
-      # - POSTGRES_INITDB_ARGS="--locale=ko_KR.UTF-8"
+      # - POSTGRES_INITDB_ARGS="--locale=ko_KR.UTF-8" (locale setting error)
     ports:
       - 9001:5432
     volumes:
