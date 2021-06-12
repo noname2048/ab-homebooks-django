@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # apps, 3rd party
     "debug_toolbar",
     "rest_framework",
+    "rest_framework.authtoken",
     "rest_framework_jwt",
     "corsheaders",
     "django_pydenticon",
@@ -93,6 +94,4 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
