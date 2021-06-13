@@ -47,6 +47,10 @@ services:
       - /bin/sh
       - -c
       - |
-        dockerize -wait tcp://postgres:5432 -timeout 15s
-        dockerize -wait tcp://redis:6379 -timeout 15s
-        python manage.py runserver 0:8000
+      - sleep 10
+      - python manage.py runserver 0:8000
+
+      # dockerize -wait tcp://postgres:5432 -timeout 15s
+      # dockerize -wait tcp://redis:6379 -timeout 15s
+      # python manage.py runserver 0:8000
+
