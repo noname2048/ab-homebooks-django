@@ -41,6 +41,8 @@ services:
       context: . # repo dir
       dockerfile: ./compose/dev.Dockerfile
     env_file: ./servers/development/.env.development
+    ports:
+      - 8000:8000
     volumes:
       - .:/app
     command:
