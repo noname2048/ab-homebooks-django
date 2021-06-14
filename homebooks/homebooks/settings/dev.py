@@ -79,11 +79,11 @@ MIDDLEWARE = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": os.environ["SERVER_DEFAULT_DB_USERNAME"],
-        "PASSWORD": os.environ["SERVER_DEFAULT_DB_PASSWORD"],
-        "HOST": os.environ["SERVER_DEFAULT_DB_HOST"],
-        "PORT": os.environ["SERVER_DEFAULT_DB_EXPOSE_PORT"],
-        "NAME": os.environ["SERVER_DEFAULT_DB_DBNAME"],
+        "USER": "postgres",
+        "PASSWORD": "example",
+        "HOST": "postgres",
+        "PORT": "5432",
+        "NAME": "postgres",
     }
 }
 
