@@ -42,13 +42,14 @@ services:
       dockerfile: ./compose/dev.Dockerfile
     env_file: ./servers/development/.env.development
     volumes:
-      - ./homebooks:/app
+      - .:/app
     command:
-      - /bin/sh
+      - /bin/bash
       - -c
       - |
-      - sleep 10
-      - python manage.py runserver 0:8000
+        sh compose/wait-for/wait-for-postgres.sh postgres
+        cd homebooks
+        python manage.py runserver 0:8000
 
       # dockerize -wait tcp://postgres:5432 -timeout 15s
       # dockerize -wait tcp://redis:6379 -timeout 15s
