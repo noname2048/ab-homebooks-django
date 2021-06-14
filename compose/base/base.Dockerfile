@@ -8,6 +8,7 @@ RUN apt-get update \
         vim \
         wget \
         apt-utils \
+        postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # poetry
