@@ -49,9 +49,11 @@ class NoPasswordUser(AbstractBaseUser):
     name (not required. just name)
     """
 
-    email = models.EmailField("email", max_length=120)
+    email = models.EmailField("email", unique=True, max_length=120)
     name = models.CharField("name", max_length=40)
-    address = models.CharField("address", max_length=120)
+    address = models.CharField("address", max_length=120, blank=True)
+
+    USERNAME_FIELD = "email"
 
 
 class Profile(models.Model):
