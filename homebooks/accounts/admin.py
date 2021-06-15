@@ -8,7 +8,7 @@ from bookshelves.models import Bookshelf
 User = get_user_model()
 
 
-@admin.register(User)
+# @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = [
         "avatar_url_image",
