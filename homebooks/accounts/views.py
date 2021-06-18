@@ -53,7 +53,14 @@ def signup_view(request: HttpRequest):
             auth_login(signup_user)
 
 
+from .serializers import SignupSerializer
+
+
 class SignupAPIView(APIView):
+    def get(self, request):
+        serializer = SignupSerializer()
+        return Response(serializer.data)
+
     def post(self, request):
         data = json.loads(request.body)
         try:
