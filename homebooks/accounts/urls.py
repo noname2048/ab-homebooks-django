@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from .views import discover_existence_from_email
+from django.views.generic import TemplateView
 from .views import *
 
 
@@ -18,9 +19,14 @@ urlpatterns = [
     path("api/token/", TokenRefreshView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # signup forms
-    path("fbv/signup/", django_custom_signup_function_view, name="fbv"),
-    path("cbv/base/signup/", DjangoCustomSignupClassView.as_view(), name="cbv_base"),
-    path("cbv/create/signup/", DjangoCustomSignupCreateView.as_view(), name="cbv_create"),
+    path("signup/done/", TemplateView(template_name="accounts/done.html").as_view(), name="done"),
+    path("signup/fbv/", fbv_form_signup_view, name="fbv"),
+    path("signup/formview/", SignupFormView.as_view(), name="cbvFormView"),
+    path("signup/modelform/", fbv_form_signup_view),
+    path("signup/createview/", DjangoCustomSignupClassView.as_view(), name="cbv_base"),
+    path("signup/modelform/", DjangoCustomSignupCreateView.as_view(), name="cbv_create"),
+    # path("signup/serializer/"),
+    # path("signup/modelserializer/"),
     # TODO: drf
     # path("drf/signup/", ),
 ]
