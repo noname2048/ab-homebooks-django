@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 
 # module
 from homebooks.settings.base import *
+from django.conf import settings
+import datetime
 
 DEV_ENV = REPO_DIR / "servers" / "development" / ".env.development"
 if Path(DEV_ENV).exists():
@@ -50,8 +52,8 @@ INSTALLED_APPS = [
     # apps, 3rd party
     "debug_toolbar",
     "rest_framework",
-    "rest_framework.authtoken",
-    "rest_framework_jwt",
+    # "rest_framework.authtoken",
+    # "rest_framework_jwt",
     "corsheaders",
     "django_pydenticon",
     "django_extensions",
@@ -90,8 +92,32 @@ DATABASES = {
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+AUTHENTICATION_BACKENDS = [
+    "accounts.my_auth.MyBackend",  # 우리가 만든 AUTH를 먼저 검사
+    "django.contrib.auth.backends.ModelBackend",  # Django가 관리하는 AUTH
+]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "homebooks": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
