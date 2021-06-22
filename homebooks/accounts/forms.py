@@ -29,7 +29,14 @@ class NoPasswordSignupForm(UserCreationForm):
         )
 
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+
 class SignupForm(forms.Form):
+    """fbv + form, formview + form"""
+
     email = forms.EmailField(required=True)
     name = forms.CharField(required=True)
     password1 = forms.CharField(required=True, widget=forms.PasswordInput(), strip=False)
@@ -37,8 +44,17 @@ class SignupForm(forms.Form):
 
     error_messages = {"password_mismatch": "The two password fields didn't match"}
 
-    def clean_password2(self):
+    def clean_password1(self):
         password1 = self.cleaned_data.get("password1")
+        if password1:
+            try:
+                password_validation.validate_password(password1)
+            except ValidationError as error:
+                self.add_error("password1", error)
+
+    def clean_password2(self):
+        logger.debug("hi")
+        password1 = self.cleaned_data.get("password1")  # 작동하지 않음
         password2 = self.cleaned_data.get("password2")
 
         if password1 and password2 and password1 != password2:

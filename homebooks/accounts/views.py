@@ -73,16 +73,21 @@ class SignupAPIView(APIView):
 
 
 from django.views import generic
-from .forms import DjangoCustomSignupForm
+from .forms import SignupForm, SignupModelForm
+from .serializers import SignupSerializer, SignupModelSerializer
 
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import hashers
 
 
+class DoneView(generic.TemplateView):
+    template_name = "accounts/done.html"
+
+
 @require_http_methods(["GET", "POST"])
-def django_custom_signup_function_view(request: HttpRequest):
+def fbv_form_signup_view(request: HttpRequest):
     if request.method == "GET":
-        form = DjangoCustomSignupForm()
+        form = SignupForm()
         return render(
             request,
             "accounts/empty.html",
@@ -92,7 +97,7 @@ def django_custom_signup_function_view(request: HttpRequest):
         )
 
     if request.method == "POST":
-        form = DjangoCustomSignupForm(request.POST)
+        form = SignupForm(request.POST)
 
         if form.is_valid():
             data = form.cleaned_data
@@ -100,8 +105,7 @@ def django_custom_signup_function_view(request: HttpRequest):
                 email=data["email"],
                 name=data["name"],
             )
-            user.set_password(data["password"])
-            user.save(commit=True)
+            user.set_password(data["password1"])
 
             return JsonResponse(
                 {
@@ -115,6 +119,75 @@ def django_custom_signup_function_view(request: HttpRequest):
             )
 
         return JsonResponse(form.errors, status=400)
+
+
+def signup_modelform_view(request: HttpRequest):
+    if request.method == "GET":
+        form = SignupModelForm()
+        return render(request, "accounts/signupformview.html", {"form": form})
+
+    if request.method == "POST":
+        form = SignupModelForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            data = {
+                "message": "done",
+                "email": user.email,
+                "name": user.name,
+            }
+            return JsonResponse(data, status=201)
+        return JsonResponse(form.errors, status=400)
+
+
+from django import forms
+from django.urls import reverse_lazy
+
+
+class SignupFormView(generic.FormView):
+    template_name = "accounts/signupformview.html"
+    form_class: forms.Form = SignupForm
+    success_url = reverse_lazy("accounts:done")
+
+    def form_valid(self, form):
+        email = form.cleaned_data["email"]
+        name = form.cleaned_data["name"]
+        user = User(
+            email=email,
+            name=name,
+        )
+        return super().form_valid(form)
+
+
+class SignupView(generic.CreateView):
+    form_class: forms.ModelForm = SignupModelForm
+    template_name = "accounts/signup.html"
+    success_url = reverse_lazy("create_user_done")
+
+    def form_valid(self, form):
+        obj = form
+
+
+from .serializers import SignupSerializer
+
+
+def signup_serializer_view(request: HttpRequest):
+    if request.method == "GET":
+        serializer = SignupSerializer()
+        return JsonResponse(serializer.data)
+
+    if request.method == "POST":
+        serializer = SignupSerializer(data=request.POST)
+        if serializer.is_valid():
+            return JsonResponse(
+                {
+                    "message": "done",
+                    "email": serializer.validated_data["email"],
+                    "name": serializer.validated_data["name"],
+                },
+                status=201,
+            )
+
+        return JsonResponse(serializer.error_messages, status=400)
 
 
 class DjangoCustomSignupClassView(generic.View):

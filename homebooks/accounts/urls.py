@@ -10,7 +10,6 @@ from .views import discover_existence_from_email
 from django.views.generic import TemplateView
 from .views import *
 
-
 urlpatterns = [
     path("pydenticon/<path:data>.png", pydenticon_image, name="pydenticon"),  # pydention
     # path("token-auth/", obtain_jwt_token),  # login
@@ -19,10 +18,11 @@ urlpatterns = [
     path("api/token/", TokenRefreshView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # signup forms
-    path("signup/done/", TemplateView(template_name="accounts/done.html").as_view(), name="done"),
-    path("signup/fbv/", fbv_form_signup_view, name="fbv"),
-    path("signup/formview/", SignupFormView.as_view(), name="cbvFormView"),
-    path("signup/modelform/", fbv_form_signup_view),
+    path("signup/done/", DoneView.as_view(), name="done"),
+    path("signup/fbv/", fbv_form_signup_view, name="signup_view"),
+    path("signup/formview/", SignupFormView.as_view(), name="signup_formview"),
+    path("signup/modelform/", signup_modelform_view, name="signup_modelform_view"),
+    path("signup/serializer/", signup_serializer_view, name="signup_serializer_view"),
     path("signup/createview/", DjangoCustomSignupClassView.as_view(), name="cbv_base"),
     path("signup/modelform/", DjangoCustomSignupCreateView.as_view(), name="cbv_create"),
     # path("signup/serializer/"),
