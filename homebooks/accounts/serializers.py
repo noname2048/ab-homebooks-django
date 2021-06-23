@@ -41,8 +41,7 @@ class SignupSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["password1"] and data["password2"] and data["password1"] != data["password2"]:
-            raise serializers.ValidationError("두 비밀번호가 일치하지 않습니다.")
-        raise serializers.ValidationError("두 비밀번호가 일치하지 않습니다.")
+            raise serializers.ValidationError({"password2": "두 비밀번호가 일치하지 않습니다."})
         return super().validate(data)
 
     def create(self, validated_data):
