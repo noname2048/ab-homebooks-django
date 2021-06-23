@@ -128,6 +128,7 @@ def signup_modelform_view(request: HttpRequest):
 
     if request.method == "POST":
         form = SignupModelForm(request.POST)
+
         if form.is_valid():
             user = form.save(commit=False)
             data = {
@@ -170,6 +171,33 @@ class SignupView(generic.CreateView):
 from .serializers import SignupSerializer
 
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+
+from rest_framework.response import Response
+from rest_framework import status
+
+from rest_framework.decorators import (
+    api_view,
+    renderer_classes,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.permissions import AllowAny
+
+
+@api_view(("GET", "POST"))
+# @renderer_classes(
+#     (
+#         TemplateHTMLRenderer,
+#         JSONRenderer,
+#     )
+# )
+#
+@permission_classes((AllowAny,))
 def signup_serializer_view(request: HttpRequest):
     if request.method == "GET":
         serializer = SignupSerializer()
@@ -187,7 +215,9 @@ def signup_serializer_view(request: HttpRequest):
                 status=201,
             )
 
-        return JsonResponse(serializer.error_messages, status=400)
+        # return JsonResponse(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # (serializer.errors, status=400)
 
 
 class DjangoCustomSignupClassView(generic.View):
