@@ -63,6 +63,17 @@ class SignupForm(forms.Form):
             )
         return password2
 
+    def clean(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if password1 is not None and password2 is not None and password1 != password2:
+            raise ValidationError(
+                self.error_messages["password_mismatch"], code="password_mismatch"
+            )
+
+        return super().clean()
+
 
 class SignupModelForm(forms.ModelForm):
     password1 = forms.CharField(required=True, widget=widgets.PasswordInput)
