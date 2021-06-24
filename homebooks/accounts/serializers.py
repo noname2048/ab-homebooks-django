@@ -76,6 +76,13 @@ class SignupModelSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if User.objects.filter(email=attrs["email"]).exists():
             raise serializers.ValidationError({"email", ("Email is already in use",)})
+
+        password1 = attrs["password1"]
+        password2 = attrs["password2"]
+
+        if password1 and password2 and password1 != password2:
+            raise serializers.ValidationError({"password2", ("password mismatch",)})
+
         return super().validate(attrs)
 
     def create(self, validated_data):
