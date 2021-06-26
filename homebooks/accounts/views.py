@@ -243,3 +243,30 @@ from django.views import generic
 
 class DjangoCustomSignupCreateView(generic.CreateView):
     pass
+
+
+from rest_framework.views import APIView
+from rest_framework import authentication, permissions
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class UserCreateListView(APIView):
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+        usernames = [u.email for u in User.objects.all()]
+        return Response(usernames)
+
+    def post(self, request, format=None):
+        serializer = SignupModelSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.create(serializer.validated_data, commit=False)
+            return Response({"email": user.email, "name": user.name})
+
+        ret = {key: value for key, value in serializer.data if key in ("email", "name")}
+        ret.update(serializer.errors)
+        return Response(ret, status=400)

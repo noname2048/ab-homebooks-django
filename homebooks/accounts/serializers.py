@@ -46,10 +46,9 @@ class SignupSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         validated_data["password"] = make_password(validated_data.get("password1"))
-        return super().create(validated_data)
-
-    def perform_create(self):
-        pass
+        validated_data.pop("password1")
+        validated_data.pop("password2")
+        return User.objects.create(**validated_data)
 
 
 class SignupModelSerializer(serializers.ModelSerializer):
@@ -70,7 +69,9 @@ class SignupModelSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "email",
-            "full_name",
+            "name",
+            "password1",
+            "password2",
         )
 
     def validate(self, attrs):
@@ -85,6 +86,12 @@ class SignupModelSerializer(serializers.ModelSerializer):
 
         return super().validate(attrs)
 
-    def create(self, validated_data):
+    def create(self, validated_data, commit=True):
         validated_data["password"] = make_password(validated_data.get("password1"))
-        return super().create(validated_data)
+        validated_data.pop("password1")
+        validated_data.pop("password2")
+        user = User(**validated_data)
+        if commit:
+            user.save(commit=commit)
+
+        return user
