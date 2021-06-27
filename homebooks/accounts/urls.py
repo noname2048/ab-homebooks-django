@@ -26,6 +26,7 @@ urlpatterns = [
     path("signup/createview/", DjangoCustomSignupClassView.as_view(), name="cbv_base"),
     path("signup/modelform/", DjangoCustomSignupCreateView.as_view(), name="cbv_create"),
     path("signup/modelserializer/", UserCreateListView.as_view(), name="apiview"),
+    path("login/modelserializer/", UserLoginPostView.as_view(), name="loginview"),
     # path("signup/serializer/"),
     # path("signup/modelserializer/"),
     # TODO: drf
