@@ -270,3 +270,27 @@ class UserCreateListView(APIView):
         ret = {key: value for key, value in serializer.data if key in ("email", "name")}
         ret.update(serializer.errors)
         return Response(ret, status=400)
+
+
+from .serializers import LoginSerializer
+
+
+class UserLoginPostView(APIView):
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            user = User.objects.filter(email=validated_data["email"], name=validated_data["name"])[
+                :1
+            ]
+            if user.exists:
+                return Response({"message": "user exist"}, status=200)
+
+            return Response({"messages": "user not exist"}, status=404)
+        return Response(
+            {"messages": "none validated data", "detail": serializer.errors}, status=400
+        )
