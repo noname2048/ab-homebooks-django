@@ -279,16 +279,31 @@ class UserLoginPostView(APIView):
 
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    serializer_class = LoginSerializer
 
     def post(self, request, format=None):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            user = User.objects.filter(email=validated_data["email"], name=validated_data["name"])[
-                :1
-            ]
+            user = User.objects.filter(
+                email=validated_data["email"], name=validated_data["name"]
+            ).first()
+
             if user.exists:
-                return Response({"message": "user exist"}, status=200)
+                from rest_framework_simplejwt.tokens import RefreshToken
+
+                refresh = RefreshToken.for_user(user)
+                refresh_token = str(refresh)
+                access_token = str(refresh.access_token)
+
+                return Response(
+                    {
+                        "message": "user exist",
+                        "refresh_token": refresh_token,
+                        "access_token": access_token,
+                    },
+                    status=200,
+                )
 
             return Response({"messages": "user not exist"}, status=404)
         return Response(
