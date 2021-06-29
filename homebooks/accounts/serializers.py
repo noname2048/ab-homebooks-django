@@ -97,7 +97,8 @@ class SignupModelSerializer(serializers.ModelSerializer):
         return user
 
 
-class LoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("email",)
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    # class Meta:
+    #     model = User
+    #     fields = ("email",)
