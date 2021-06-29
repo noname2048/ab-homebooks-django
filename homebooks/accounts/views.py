@@ -256,6 +256,7 @@ class UserCreateListView(APIView):
 
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    serializer_class = SignupModelSerializer
 
     def get(self, request, format=None):
         usernames = [u.email for u in User.objects.all()]
@@ -265,6 +266,7 @@ class UserCreateListView(APIView):
         serializer = SignupModelSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.create(serializer.validated_data, commit=False)
+            user.save()
             return Response({"email": user.email, "name": user.name})
 
         ret = {key: value for key, value in serializer.data if key in ("email", "name")}
@@ -285,11 +287,9 @@ class UserLoginPostView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            user = User.objects.filter(
-                email=validated_data["email"], name=validated_data["name"]
-            ).first()
+            user = User.objects.get(email=validated_data["email"])
 
-            if user.exists:
+            if user is not None:
                 from rest_framework_simplejwt.tokens import RefreshToken
 
                 refresh = RefreshToken.for_user(user)
@@ -299,6 +299,7 @@ class UserLoginPostView(APIView):
                 return Response(
                     {
                         "message": "user exist",
+                        "user": user.email,
                         "refresh_token": refresh_token,
                         "access_token": access_token,
                     },
