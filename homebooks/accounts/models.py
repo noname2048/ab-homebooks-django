@@ -35,7 +35,7 @@ class User(AbstractUser):
     GENDER_CHOICES = (
         ("M", "남자"),
         ("F", "여자"),
-        ("N", "선택하지 않음"),
+        ("N", "표기를 원하지 않음"),
     )
 
     gender = models.CharField(_("gender"), max_length=1, blank=True, choices=GENDER_CHOICES)
@@ -53,6 +53,9 @@ class User(AbstractUser):
 
 
 class UserManager(BaseUserManager):
+
+    user_in_migrations = True
+
     def create_user(self, email, name, password=None):
         if not email:
             raise ValueError(_("Users must have an email address"))
@@ -61,13 +64,13 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             name=name,
         )
-        user.set_password(password=password)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name):
-        user = self.create_user(email=email, name=name)
-        user.is_superuser = True
+    def create_superuser(self, email, name, password=None):
+        user = self.create_user(email=email, name=name, password=password)
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -78,6 +81,8 @@ class NoPasswordUser(AbstractBaseUser):
     Email (required)
     name (not required. just name)
     """
+
+    objects = UserManager()
 
     # base information
     email = models.EmailField(
@@ -106,9 +111,6 @@ class NoPasswordUser(AbstractBaseUser):
         help_text=_("Designates whether the user can log into this admin site."),
     )
 
-    # django information
-    objects = UserManager()
-
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -132,6 +134,12 @@ class NoPasswordUser(AbstractBaseUser):
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True
 
 
 class Profile(models.Model):

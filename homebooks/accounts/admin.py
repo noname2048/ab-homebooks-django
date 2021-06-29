@@ -8,6 +8,14 @@ from bookshelves.models import Bookshelf
 User = get_user_model()
 
 
+@admin.register(User)
+class NopasswordAdmin(admin.ModelAdmin):
+    list_display = [
+        "email",
+        "name",
+    ]
+
+
 # @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = [
