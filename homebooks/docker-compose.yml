@@ -1,0 +1,37 @@
+version: "3.8" # docker-compose.yml with manage.py
+
+volumes:
+  ab_postgres:
+  ab_redis:
+
+services:
+  postgres:
+    build:
+      context: ../compose/postgres
+      dockerfile: ./Dockerfile
+    image: postgres:12.7
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+    ports:
+      - 9001:5432
+    volumes:
+      - ab_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "PGPASSWORD=example", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      timeout: 1s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - 9002:5462
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
