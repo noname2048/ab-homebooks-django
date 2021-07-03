@@ -5,8 +5,11 @@ from homebooks.settings.base import *
 
 
 ENV_FILE_DIR: Path = REPO_DIR / "envs" / "local_debug.env"
+SECRET_FILE_DIR: Path = REPO_DIR / "envs" / "secret.env"
+
 if ENV_FILE_DIR.exists() and ENV_FILE_DIR.is_file():
     load_dotenv(ENV_FILE_DIR)
+    load_dotenv(SECRET_FILE_DIR)
 
 DEBUG = True
 SECRET_KEY = os.environ["SERVER_SECRET_KEY"]
@@ -93,6 +96,8 @@ LOGGING = {
         },
     },
 }
+
+SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
 
 CELERY_TIMEZONE = "Asia/Seoul"
 CELERY_TASK_TRACK_STARTED = True
