@@ -1,8 +1,9 @@
-from celery import shared_task, task
+from celery import shared_task, app
 from .models import User
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from homebooks import celery_app
 
 
 @shared_task
@@ -33,6 +34,7 @@ def user_isexist(email):
     return False
 
 
+@celery_app.task(serializer="json")
 def send_welcome_mail(user: User):
     mail = Mail(
         from_email="sungwook.csw@noname2048.dev",
