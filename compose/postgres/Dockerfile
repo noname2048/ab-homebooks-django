@@ -1,5 +1,6 @@
 FROM postgres:13.3
 # https://postgresql.kr/blog/when_useing_docker_official_postgres_image.html
+# https://rastalion.me/postgresql-localization/
 RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
     sed -i 's/# ko_KR.UTF-8 UTF-8/ko_KR.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
