@@ -13,6 +13,8 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import resolve_url
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.utils.timezone import datetime
+from datetime import timedelta
 
 
 class User(AbstractUser):
@@ -110,6 +112,9 @@ class NoPasswordUser(AbstractBaseUser):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
+    last_token = models.ForeignKey(
+        "accounts.EmailTokenAccess", null=True, on_delete=models.deletion.SET_NULL
+    )
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -163,21 +168,26 @@ class Profile(models.Model):
 
 
 class EmailTokenAccess(models.Model):
-    key = models.CharField(
+    objects = models.Manager
+    token = models.CharField(
         _("key"),
         max_length=40,
         primary_key=True,
     )
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         get_user_model(),
         related_name="email_token",
         on_delete=models.deletion.CASCADE,
+        null=True,
     )
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=lambda: datetime.now())
+    expired_at = models.DateTimeField(default=lambda: datetime.now() + timedelta(days=1))
 
     def save(self, *args, **kwargs):
-        if not self.key:
-            self.key = self.generate_key()
+        if not self.token:
+            self.token = self.generate_key()
+        if not self.expired_at:
+            self.expired_at = self.created_at + timedelta(days=1)
         return super().save(*args, **kwargs)
 
     @classmethod
@@ -185,4 +195,7 @@ class EmailTokenAccess(models.Model):
         return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
-        return self.key
+        return self.token
+
+    class Meta:
+        ordering = ["-created_at"]
