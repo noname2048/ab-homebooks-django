@@ -1,3 +1,6 @@
+mport binascii
+import os
+
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.core.validators import EmailValidator
@@ -275,6 +278,8 @@ class UserCreateListView(APIView):
 
 
 from .serializers import LoginSerializer
+from .tasks import send_welcome_mail, send_token_email
+from .models import EmailTokenAccess
 
 
 class UserLoginPostView(APIView):
@@ -296,17 +301,75 @@ class UserLoginPostView(APIView):
                 refresh_token = str(refresh)
                 access_token = str(refresh.access_token)
 
-                return Response(
-                    {
-                        "message": "user exist",
-                        "user": user.email,
-                        "refresh_token": refresh_token,
-                        "access_token": access_token,
-                    },
-                    status=200,
-                )
+                email_token = EmailTokenAccess(user=user)
+                email_token.save()
+                user.last_token = email_token
+                user.save(update_fields=("last_token",))
+
+                send_token_email.delay(email=user.email, token=email_token.token)
+
+                from django.shortcuts import redirect
+
+                return Response({"message": "user exists, mail will be send"}, status=201)
+
+                # return Response(
+                #     {
+                #         "message": "user exist",
+                #         "user": user.email,
+                #         "refresh_token": refresh_token,
+                #         "access_token": access_token,
+                #     },
+                #     status=200,
+                # )
 
             return Response({"messages": "user not exist"}, status=404)
         return Response(
             {"messages": "none validated data", "detail": serializer.errors}, status=400
         )
+
+
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+class TokenToLoginView(APIView):
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+
+    def get(self, request, foramt=None):
+
+        token = str(request.GET.get("token"))
+        if token is not None:
+            et = EmailTokenAccess.objects.select_related("user").get(token=token)
+
+            if et is None:
+                return Response({"message": "token not valid"}, status=400)
+
+            if et.user.last_token.token == et.token:
+                rt, at = self.get_jwt_tokens(et.user)
+
+                return Response(
+                    {
+                        "message": f"{et.user.email}",
+                        "rt": rt,
+                        "at": at,
+                    },
+                    status=200,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "not latest token",
+                    },
+                    status=400,
+                )
+
+        return Response({"message": "not valid"}, status=400)
+
+    @staticmethod
+    def get_jwt_tokens(self, user: User):
+        refresh = RefreshToken.for_user(user)
+        refresh_token = str(refresh)
+        access_token = str(refresh.access_token)
+        return refresh_token, access_token
