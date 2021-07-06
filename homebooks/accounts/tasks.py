@@ -4,6 +4,7 @@ import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from homebooks import celery_app
+from django.utils.timezone import datetime
 
 
 @shared_task
@@ -36,15 +37,16 @@ def user_isexist(email):
 
 @celery_app.task
 def send_welcome_mail(email: str):
+    now = datetime.now()
+    time_str = datetime.strptime(now, "%Y-%m-%d")
     mail = Mail(
         from_email="sungwook.csw@noname2048.dev",
         to_emails=email,
         subject="welcome!",
-        html_content="welcome email test",
+        html_content="welcome email test ",
     )
     sg = SendGridAPIClient(os.environ["SENDGRID_API_KEY"])
     response = sg.client.mail.send.post(request_body=mail.get())
-    return response
 
 
 @celery_app.task
@@ -57,8 +59,7 @@ def send_token_email(email: str, token=None):
         from_email="noreply@noname2048.dev",
         to_emails=email,
         subject="homebooks login link",
-        html_content=f"to login, click here http://localhost:8000/login/?token={token}",
+        html_content=f"to login, click here http://localhost:8000/accounts/login/?token={token}",
     )
     sg = SendGridAPIClient(os.environ["SENDGRID_API_KEY"])
     response = sg.client.mail.send.post(request_body=mail.get())
-    return response
