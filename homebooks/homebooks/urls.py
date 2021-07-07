@@ -42,6 +42,7 @@ from accounts.urls import urlpatterns as accounts_url
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include((accounts_url, "accounts"))),
+    path("books/", include("books.urls")),
     path("bookshelves/", include("bookshelves.urls")),
 ]
 
