@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.html import mark_safe
 from django.template.defaultfilters import truncatechars
+from .models import EmailTokenAccess
 
 from bookshelves.models import Bookshelf
 
@@ -13,6 +14,14 @@ class NopasswordAdmin(admin.ModelAdmin):
     list_display = [
         "email",
         "name",
+    ]
+
+
+@admin.register(EmailTokenAccess)
+class EmailTokenAccessAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "created_at",
     ]
 
 
