@@ -146,6 +146,10 @@ class NoPasswordUser(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+    @property
+    def username(self):
+        return self.name
+
 
 class Profile(models.Model):
     user = models.OneToOneField(
@@ -167,6 +171,14 @@ class Profile(models.Model):
             return resolve_url("pydenticon", self.user.email)
 
 
+def datetime_now():
+    return datetime.now()
+
+
+def datetime_afterday():
+    return datetime.now() + timedelta(days=1)
+
+
 class EmailTokenAccess(models.Model):
     objects = models.Manager
     token = models.CharField(
@@ -180,14 +192,14 @@ class EmailTokenAccess(models.Model):
         on_delete=models.deletion.CASCADE,
         null=True,
     )
-    created_at = models.DateTimeField(default=lambda: datetime.now())
-    expired_at = models.DateTimeField(default=lambda: datetime.now() + timedelta(days=1))
+    created_at = models.DateTimeField(default=datetime_now)
+    expired_at = models.DateTimeField(default=datetime_afterday)
 
     def save(self, *args, **kwargs):
         if not self.token:
             self.token = self.generate_key()
         if not self.expired_at:
-            self.expired_at = self.created_at + timedelta(days=1)
+            self.expired_at = datetime_afterday()
         return super().save(*args, **kwargs)
 
     @classmethod
