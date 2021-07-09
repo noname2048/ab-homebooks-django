@@ -1,3 +1,4 @@
+import rest_framework.status
 from django.shortcuts import render
 from django.http import HttpRequest
 from rest_framework import generics
@@ -36,10 +37,17 @@ class BookViewSet(viewsets.ViewSet):
         - 기본
         """
         name = request.GET.get("q")
-        queryset = Book.objects.filter(name_icontains="name")
+        queryset = Book.objects.filter(name__icontains="name")
         serializer = BookSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(
+            {"data": serializer.data, "name": name}, status=rest_framework.status.HTTP_200_OK
+        )
+
+    def create(self, request: rest_framework.request.Request) -> rest_framework.response.Response:
+        book = BookSerializer(data=request.POST)
+        book.save()
+        return Response({"data": book}, status=rest_framework.status.HTTP_201_CREATED)
 
 
 book_list = BookViewSet.as_view({"get": "list"})
-book_create = BookViewSet.as_view({"get": "create"})
+book_create = BookViewSet.as_view({"post": "create"})
