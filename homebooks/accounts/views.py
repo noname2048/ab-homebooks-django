@@ -1,4 +1,4 @@
-mport binascii
+import binascii
 import os
 
 from django.shortcuts import render
