@@ -20,3 +20,9 @@ class Bookshelf(models.Model):
         max_length=100,
         blank=True,
     )
+
+    address = models.CharField(
+        _("address"),
+        max_length=200,
+        blank=True,
+    )

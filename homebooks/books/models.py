@@ -6,6 +6,7 @@ from bookshelves.models import Bookshelf
 
 class Book(models.Model):
 
+    objects = models.Manager
     name = models.CharField(
         _("name"),
         max_length=100,
