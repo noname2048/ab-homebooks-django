@@ -12,17 +12,15 @@ class Bookshelf(models.Model):
     user = models.ForeignKey(
         user_model,
         on_delete=models.deletion.PROTECT,
-        blank=True,
     )
 
     name = models.CharField(
         _("name"),
         max_length=100,
-        blank=True,
     )
 
     address = models.CharField(
         _("address"),
         max_length=200,
-        blank=True,
+        null=True,
     )
