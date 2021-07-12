@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from homebooks.settings.base import *
-
+from datetime import timedelta
 
 ENV_FILE_DIR: Path = REPO_DIR / "envs" / "local_debug.env"
 SECRET_FILE_DIR: Path = REPO_DIR / "envs" / "secret.env"
@@ -113,3 +113,10 @@ CELERY_RESULT_BACKEND = "django-db"
 #         "LOCATION": "my_cache_table",
 #     }
 # }
+
+LANGUAGE_CODE = "en-us"
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
