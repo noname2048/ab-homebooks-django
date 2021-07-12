@@ -347,7 +347,7 @@ class TokenToLoginView(APIView):
                 return Response({"message": "token not valid"}, status=400)
 
             if et.user.last_token.token == et.token:
-                rt, at = self.get_jwt_tokens(et.user)
+                rt, at = self.get_jwt_tokens(user=et.user)
 
                 return Response(
                     {
@@ -368,7 +368,7 @@ class TokenToLoginView(APIView):
         return Response({"message": "not valid"}, status=400)
 
     @staticmethod
-    def get_jwt_tokens(self, user: User):
+    def get_jwt_tokens(user: User):
         refresh = RefreshToken.for_user(user)
         refresh_token = str(refresh)
         access_token = str(refresh.access_token)
