@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Bookshelf
 
-# Register your models here.
+
+@admin.register(Bookshelf)
+class BookshelfAdmin(admin.ModelAdmin):
+    fields = (
+        "name",
+        "user",
+    )
+    list_display = (
+        "name",
+        "user",
+    )
