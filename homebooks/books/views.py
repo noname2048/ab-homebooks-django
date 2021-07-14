@@ -12,17 +12,10 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-class BookViewSet(viewsets.ViewSet):
-    """책을 검색하는 API
-
-    - 기본적으로 모든책을 검색합니다.
-    """
-
+class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [
-        permissions.AllowAny,
-    ]
+    permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
         # operation_description="책검색 api",
@@ -36,18 +29,29 @@ class BookViewSet(viewsets.ViewSet):
 
         - 기본
         """
+        queryset = self.get_queryset()
         name = request.GET.get("q")
-        queryset = Book.objects.filter(name__icontains="name")
+
+        if request.auth:
+            queryset = queryset.filter(user=request.auth)
+
+        if name:
+            queryset = queryset.filter(name__icontains="name")
+
         serializer = BookSerializer(queryset, many=True)
         return Response(
             {"data": serializer.data, "name": name}, status=rest_framework.status.HTTP_200_OK
         )
 
-    def create(self, request: rest_framework.request.Request) -> rest_framework.response.Response:
-        book = BookSerializer(data=request.POST)
-        book.save()
-        return Response({"data": book}, status=rest_framework.status.HTTP_201_CREATED)
+
+class BookCreateView(generics.CreateAPIView):
+    def create(self, request):
+        # 오로지 ISBN만으로 등록
+        isbn = request.POST.get("isbn")
+        # TODO: isbn 검색요청을 MSA에 요청. 있을경우 그 정보로 등록
+
+        pass
 
 
-book_list = BookViewSet.as_view({"get": "list"})
-book_create = BookViewSet.as_view({"post": "create"})
+book_list = BookListView.as_view()
+book_create = BookCreateView.as_view()
