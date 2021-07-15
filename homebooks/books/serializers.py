@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Book
 
 
-class BookSerializer(serializers.ModelSerializer):
+class UserBookRegister(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ["name", "isbn", "bookshelves"]
+        fields = ["bookshelves", "isbn"]
