@@ -22,6 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from rest_framework import permissions
+from . import views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -39,11 +40,18 @@ schema_view = get_schema_view(
 
 from accounts.urls import urlpatterns as accounts_url
 
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = [
+    path("", views.TemplateView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("accounts/", include((accounts_url, "accounts"))),
     path("books/", include("books.urls")),
     path("bookshelves/", include("bookshelves.urls")),
+    path("sentry-debug/", trigger_error),
 ]
 
 
