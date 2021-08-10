@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "accounts",
     "bookshelves",
     "books",
+    "mybooks",
 ]
 
 MIDDLEWARE = [
